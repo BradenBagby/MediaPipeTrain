@@ -82,6 +82,7 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
     if (width < 0.01 || height < 0.01)
     {
         LOG(INFO) << "No Hand Detected";
+        std::cout << "No Hand Detected" << std::endl;
         return ::mediapipe::OkStatus();
     }
 
@@ -164,9 +165,9 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
     }
 
     // file output test
-
+  std::cout << "Output Path: " << FLAGS_output_data_path << std::endl;
      std::fstream out(FLAGS_output_data_path, std::ios_base::out | std::ios_base::app);
-
+  
     
      for (int i=0; i < landmarkList.landmark_size(); ++i) {
      const NormalizedLandmark& landmark = landmarkList.landmark(i);

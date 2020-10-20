@@ -3,6 +3,8 @@ import os
 import tempfile
 from subprocess import Popen
 
+THREADS = 4
+
 #Get all filenames from root to run in train 
 root = "/home/bradenbagby/Downloads/asl_alphabet_train/asl_alphabet_train"
 output = "/home/bradenbagby/Downloads/Output/"
@@ -29,6 +31,7 @@ for filename in os.listdir(output):
 
 
 commands = [] #just keeping array of commands to run then running them in different processes to make use of threads
+outputs = [] #we can check and make sure it created an output. if it didnt then no hand was detected
 
 #create data set
 for f in files:
@@ -38,14 +41,18 @@ for f in files:
     #run media pipe
     runCommand = 'bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_gpu   --calculator_graph_config_file=mediapipe/graphs/hand_tracking/hand_tracking_mobile.pbtxt --input_video_path=' +inputPath+ ' --output_data_path=' + outputPath
     commands.append(runCommand)
-    print(runCommand)
-    break
+    outputs.append(outputPath)
+    
 
 
-#thanks internet
-# run in parallel
-processes = [Popen(cmd, shell=True) for cmd in commands]
-# do other things here..
-# wait for completion
-for p in processes: p.wait()
-print("done")
+successCount = 0
+
+for i in range(0,len(commands)):
+    os.system(commands[i])
+    if os.path.isfile(outputs[i]):
+        successCount += 1
+
+print("Successes: " + str(successCount) + " - %" + str(float(successCount) / float(len(commands))))
+    
+
+   
