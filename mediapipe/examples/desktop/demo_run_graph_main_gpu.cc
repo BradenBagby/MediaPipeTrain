@@ -39,7 +39,7 @@ bool runOnce = false;
 DEFINE_string(
     calculator_graph_config_file, "",
     "Name of file containing text format CalculatorGraphConfig proto.");
-DEFINE_string(input_video_path, "",
+DEFINE_string(input_image_path, "",
               "Full path of video to load. "
               "If not provided, attempt to use a webcam.");
 DEFINE_string(output_video_path, "",
@@ -68,10 +68,10 @@ DEFINE_string(output_video_path, "",
 
   LOG(INFO) << "Initialize the camera or load the video.";
   //cv::VideoCapture capture;
-  const bool load_video = !FLAGS_input_video_path.empty();
-  std::cout << "Input path: " << FLAGS_input_video_path << std::endl;
+  const bool load_video = !FLAGS_input_image_path.empty();
+  std::cout << "Input path: " << FLAGS_input_image_path << std::endl;
   if (load_video) {
-   // capture.open(FLAGS_input_video_path);
+   // capture.open(FLAGS_input_image_path);
   } else {
   //  capture.open(0);
   }
@@ -97,7 +97,7 @@ DEFINE_string(output_video_path, "",
   bool grab_frames = true;
   while (grab_frames) {
     // Capture opencv camera or video frame.
-    cv::Mat camera_frame_raw = cv::imread(FLAGS_input_video_path,1);
+    cv::Mat camera_frame_raw = cv::imread(FLAGS_input_image_path,1);
     //capture >> ///camera_frame_raw; //Modified to get just an image from file path
     if (camera_frame_raw.empty() || runOnce) break;  // End of video. end of one read of file
     cv::Mat camera_frame;
