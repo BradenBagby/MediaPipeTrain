@@ -34,6 +34,8 @@ constexpr char kInputStream[] = "input_video";
 constexpr char kOutputStream[] = "output_video";
 constexpr char kWindowName[] = "MediaPipe";
 
+bool runOnce = false;
+
 DEFINE_string(
     calculator_graph_config_file, "",
     "Name of file containing text format CalculatorGraphConfig proto.");
@@ -65,23 +67,24 @@ DEFINE_string(output_video_path, "",
   gpu_helper.InitializeForTest(graph.GetGpuResources().get());
 
   LOG(INFO) << "Initialize the camera or load the video.";
-  cv::VideoCapture capture;
+  //cv::VideoCapture capture;
   const bool load_video = !FLAGS_input_video_path.empty();
+  std::cout << "Input path: " << FLAGS_input_video_path << std::endl;
   if (load_video) {
-    capture.open(FLAGS_input_video_path);
+   // capture.open(FLAGS_input_video_path);
   } else {
-    capture.open(0);
+  //  capture.open(0);
   }
-  RET_CHECK(capture.isOpened());
+  //RET_CHECK(capture.isOpened());
 
   cv::VideoWriter writer;
   const bool save_video = !FLAGS_output_video_path.empty();
   if (!save_video) {
     cv::namedWindow(kWindowName, /*flags=WINDOW_AUTOSIZE*/ 1);
 #if (CV_MAJOR_VERSION >= 3) && (CV_MINOR_VERSION >= 2)
-    capture.set(cv::CAP_PROP_FRAME_WIDTH, 640);
-    capture.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-    capture.set(cv::CAP_PROP_FPS, 30);
+   // capture.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+   // capture.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+   // capture.set(cv::CAP_PROP_FPS, 30);
 #endif
   }
 
@@ -94,9 +97,9 @@ DEFINE_string(output_video_path, "",
   bool grab_frames = true;
   while (grab_frames) {
     // Capture opencv camera or video frame.
-    cv::Mat camera_frame_raw;
-    capture >> camera_frame_raw;
-    if (camera_frame_raw.empty()) break;  // End of video.
+    cv::Mat camera_frame_raw = cv::imread(FLAGS_input_video_path,1);
+    //capture >> ///camera_frame_raw; //Modified to get just an image from file path
+    if (camera_frame_raw.empty() || runOnce) break;  // End of video. end of one read of file
     cv::Mat camera_frame;
     cv::cvtColor(camera_frame_raw, camera_frame, cv::COLOR_BGR2RGB);
     if (!load_video) {
@@ -156,16 +159,17 @@ DEFINE_string(output_video_path, "",
     cv::Mat output_frame_mat = mediapipe::formats::MatView(output_frame.get());
     cv::cvtColor(output_frame_mat, output_frame_mat, cv::COLOR_RGB2BGR);
     if (save_video) {
-      if (!writer.isOpened()) {
-        LOG(INFO) << "Prepare video writer.";
-        writer.open(FLAGS_output_video_path,
-                    mediapipe::fourcc('a', 'v', 'c', '1'),  // .mp4
-                    capture.get(cv::CAP_PROP_FPS), output_frame_mat.size());
-        RET_CHECK(writer.isOpened());
-      }
-      writer.write(output_frame_mat);
+     // if (!writer.isOpened()) {
+      //  LOG(INFO) << "Prepare video writer.";
+       // writer.open(FLAGS_output_video_path,
+                 //   mediapipe::fourcc('a', 'v', 'c', '1'),  // .mp4
+                    //capture.get(cv::CAP_PROP_FPS), output_frame_mat.size());
+      //  RET_CHECK(writer.isOpened());
+     // }
+     // writer.write(output_frame_mat);
     } else {
-      cv::imshow(kWindowName, output_frame_mat);
+    //  cv::imshow(kWindowName, output_frame_mat);
+    runOnce = true;
       // Press any key to exit.
       const int pressed_key = cv::waitKey(5);
       if (pressed_key >= 0 && pressed_key != 255) grab_frames = false;
