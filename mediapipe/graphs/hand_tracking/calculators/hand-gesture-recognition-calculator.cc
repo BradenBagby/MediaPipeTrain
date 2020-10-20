@@ -11,9 +11,12 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 
+constexpr char kOutputStream[] = "output_data";
 DEFINE_string(output_data_path, "",
               "Full path of where to save result (.txt only). "
               "If not provided, Uh Oh.");
+
+
 
 
 namespace mediapipe
@@ -161,12 +164,13 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
     }
 
     // file output test
+
      std::fstream out(FLAGS_output_data_path, std::ios_base::out | std::ios_base::app);
 
     
      for (int i=0; i < landmarkList.landmark_size(); ++i) {
      const NormalizedLandmark& landmark = landmarkList.landmark(i);
-        out<<static_cast<float>(landmark.x())<<" "<<static_cast<float>(landmark.y())<<" "<<static_cast<float>(landmark.z())<<std::endl;
+        out<<static_cast<float>(landmark.x())<<","<<static_cast<float>(landmark.y())<<","<<static_cast<float>(landmark.z())<<std::endl;
      }
   
      out.close();
